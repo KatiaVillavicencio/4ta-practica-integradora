@@ -5,7 +5,6 @@ import { userService } from "../repositories/index.js";
 import UserManager  from "../dao/classes/userManagerMongo.js";
 import uploader from "../utils.js";
 
-
 const userRouter = Router()
 
 const usersMongo = new UserManager()
@@ -67,6 +66,9 @@ userRouter.post("/premium/:uid", async (req, res) => {
     { name: 'profiles', maxCount: 2 },    
     { name: 'products', maxCount: 2 },
     { name: 'documents', maxCount: 2},
+    { name: 'identificacion', maxCount: 1 },
+    { name: 'comprobante_domicilio', maxCount: 1 },
+    { name: 'comprobante_estado_cuenta', maxCount: 1 }
   
   ]), async(req, res) => {
     const files = req.files;
@@ -93,8 +95,25 @@ userRouter.post("/premium/:uid", async (req, res) => {
       usersMongo.updateDocuments(userId, ...documentFiles)
       allFiles.push(...documentFiles);
     }
+
+    if (files['identificacion']) {
+      const identificacionFiles = files['identificacion'].map(file => ({ name: 'identificacion', reference: file.path }));
+      usersMongo.updateDocuments(userId, ...identificacionFiles)
+      allFiles.push(...identificacionFiles);
+    }
+
+    if (files['comprobante_domicilio']) {
+      const comprobante_domicilioFiles = files['comprobante_domicilio'].map(file => ({ name: 'comprobante_domicilio', reference: file.path }));
+      usersMongo.updateDocuments(userId, ...comprobante_domicilioFiles)
+      allFiles.push(...comprobante_domicilioFiles);
+    }
+
+    if (files['comprobante_estado_cuenta']) {
+      const comprobante_estado_cuentaFiles = files['comprobante_estado_cuenta'].map(file => ({ name: 'comprobante_estado_cuenta', reference: file.path }));
+      usersMongo.updateDocuments(userId, ...comprobante_estado_cuentaFiles)
+      allFiles.push(...comprobante_estado_cuentaFiles);
+    }
    
-  
     res.send({ status: "success", message: "Archivos Guardados" });
   });
 
