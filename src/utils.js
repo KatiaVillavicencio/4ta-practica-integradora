@@ -2,6 +2,7 @@ import {dirname} from "path"
 import { fileURLToPath } from "url"
 import passport from "passport"
 import nodemailer from 'nodemailer'
+import multer from 'multer'
 export const __dirname=dirname(fileURLToPath(import.meta.url))
 
 //hasheo
@@ -40,3 +41,51 @@ export const transport= nodemailer.createTransport({
 
     }
 })
+
+//upload documents with multer//
+
+const storage = multer.diskStorage({
+    destination: (req, file, cb) => {
+      const fileType = file.fieldname;
+      let uploadPath = 'public/files/';
+  
+      // Destino de la carpeta según el tipo de archivo
+      switch (fileType) {
+        case 'profiles':
+          uploadPath += 'profiles/';
+          break;
+        case 'products':
+          uploadPath += 'products/';
+          break;
+        case 'documents':
+          uploadPath += 'documents/';
+          break;
+      
+        default:
+          uploadPath += 'other/';
+          break;
+      }
+  
+      // Crea la carpeta de destino si no existe
+      const fullPath = path.join(__dirname, uploadPath);
+      if (!fs.existsSync(fullPath)) {
+        fs.mkdirSync(fullPath, { recursive: true });
+      }
+  
+      cb(null, fullPath);
+    },
+    filename: (req, file, cb) => {
+      const fileType = file.fieldname;
+  
+      // Genera un nombre único usando el timestamp actual y un número aleatorio
+      const uniqueSuffix = Date.now() + '-' + Math.round(Math.random() * 1E9);
+      const fileExtension = path.extname(file.originalname);
+      const finalFilePath = fileType + '-' + uniqueSuffix + fileExtension;
+  
+      cb(null, finalFilePath);
+    }
+  });
+ const uploader = multer({ storage: storage });
+export default uploader
+  
+

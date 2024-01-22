@@ -5,6 +5,7 @@ import { createHash, isValidPassword,  } from "./utils.js"
 import { generateAndSetToken} from "../config/token.config.js";
 import UserManager from "../dao/classes/userManagerMongo.js";
 import logger from "../../logger.js";
+import path from "path";
 
 const userService = new UserManager();
 
@@ -163,6 +164,56 @@ async function deleteUser(req, res) {
     res.status(500).json({ status: "error", error: "Error al eliminar el usuario" });
   }
 }
+  
+
+//subir documentos//
+
+/*const uploadDocuments = async (req, res) => {
+  try {
+    // Obtener el ID del usuario de la URL
+    const userId = req.params.uid;
+
+    // Verificar si req.files existe y contiene archivos
+    if (req.files) {
+      // Buscar el usuario en la base de datos
+      const user = await usersModel.findById(userId);
+
+      if (!user) {
+        return res.status(404).json({ error: "Usuario no encontrado" });
+      }
+
+      // Iterar sobre los archivos subidos y actualizar el modelo
+      Object.keys(req.files).forEach((fileType) => {
+        const file = req.files[fileType][0];
+        const filePath = file.path;
+        
+
+        // Determinar el tipo de documento y agregarlo al array documents
+        let documentType;
+        if (fileType === "identificationImage") {
+          documentType = "profileImage";
+        } else if (fileType === "document") {
+          documentType = "documentWord";
+        } else if (fileType === "profilePhoto") {
+          documentType = "identificationPdf";
+        }
+
+        // Agregar el objeto al array documents
+        user.documents.push({ type: documentType, path: filePath });
+      });
+
+      // Guardar los cambios en la base de datos
+      await user.save();
+
+      res.status(200).json({ message: "Archivos cargados con éxito" });
+    } else {
+      res.status(400).json({ error: "No se han proporcionado archivos para cargar" });
+    }
+  } catch (error) {
+    console.error("Error al subir archivos:", error);
+    res.status(500).json({ error: "Error interno del servidor" });
+  }
+};*/
 
 module.exports = {
   registerUserAndMessage,
@@ -175,4 +226,5 @@ module.exports = {
   getAllUsers,
   createUser,
   getUserByEmail,
+  //uploadDocuments,
 };
